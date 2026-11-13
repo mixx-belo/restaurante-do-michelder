@@ -32,13 +32,9 @@ public class ProdutoController {
     public ResponseEntity<Produto> cadastrarProduto(
             @Valid @RequestBody ProdutoRequest dto) {
 
-        Optional<Produto> novo = produtoService.cadastrar(dto);
+        Produto novo = produtoService.cadastrar(dto);
 
-        if (novo.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(novo.get());
-        }
-
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(novo);
     }
 
     @GetMapping

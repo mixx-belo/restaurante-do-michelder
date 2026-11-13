@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import br.com.senai.deliveryavaliacao.dto.ProdutoRequest;
+import br.com.senai.deliveryavaliacao.exception.RestauranteNaoEncontradoException;
 import br.com.senai.deliveryavaliacao.model.Produto;
 import br.com.senai.deliveryavaliacao.model.Restaurante;
 import br.com.senai.deliveryavaliacao.repository.ProdutoRepository;
@@ -21,25 +22,17 @@ public class ProdutoService {
         this.restauranteRepository = restauranteRepository;
     }
 
-    public Optional<Produto> cadastrar(ProdutoRequest dto) {
-        if (dto.getRestauranteId() == null) {
-            return Optional.empty();
-        }
+    public Produto cadastrar(ProdutoRequest dto) {
+    Restaurante restaurante = restauranteRepository.findById(dto.getRestauranteId())
+            .orElseThrow(RestauranteNaoEncontradoException::new);
 
-        Optional<Restaurante> restauranteEncontrado = restauranteRepository.findById(dto.getRestauranteId());
+    Produto produto = new Produto();
+    produto.setRestaurante(restaurante);
+    produto.setNome(dto.getNome());
+    produto.setPreco(dto.getPreco());
 
-        if (restauranteEncontrado.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Produto produto = new Produto();
-
-        produto.setRestaurante(restauranteEncontrado.get());
-        produto.setNome(dto.getNome());
-        produto.setPreco(dto.getPreco());
-
-        return Optional.of(produtoRepository.save(produto));
-    }
+    return produtoRepository.save(produto);
+}
 
     public Optional<Produto> buscarPorId(Integer id) {
         return produtoRepository.findById(id);

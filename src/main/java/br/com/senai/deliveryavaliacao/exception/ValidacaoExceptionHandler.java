@@ -17,9 +17,14 @@ public class ValidacaoExceptionHandler {
 
         Map<String, String> mensagens = new LinkedHashMap<>();
 
-        erro.getBindingResult().getFieldErrors().forEach(campo -> mensagens.put(campo.getField(),
-                campo.getDefaultMessage()));
+        erro.getBindingResult().getFieldErrors().forEach(campo ->
+                mensagens.put(campo.getField(), campo.getDefaultMessage()));
 
         return ResponseEntity.badRequest().body(mensagens);
+    }
+
+    @ExceptionHandler(RestauranteNaoEncontradoException.class)
+    public ResponseEntity<Void> tratarRestauranteNaoEncontrado() {
+        return ResponseEntity.notFound().build();
     }
 }
